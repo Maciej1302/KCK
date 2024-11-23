@@ -2,8 +2,13 @@ import os
 from contextlib import nullcontext
 
 import django
+from prompt_toolkit.shortcuts import message_dialog, input_dialog, button_dialog
+from prompt_toolkit.styles import Style
+from prompt_toolkit.shortcuts import radiolist_dialog
+
 
 from Scrapper import scrapper
+from car_methods import create_car
 
 # Ustawienie środowiska Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "KCK.settings")
@@ -11,46 +16,106 @@ django.setup()
 
 from app.models import Car
 
-cars =[]
 
-def wyswietl_menu():
-    print("\n=== MENU ===")
-    print("1. Scrapuj samochody i je wyświetl")
-    print("2. Dodaj samochód do swojej bazy danych")
-    print("3. Wyświetl samochody ze swojej bazy danych")
-    print("4. Wyjście")
+style = Style.from_dict({
+    "dialog": "bg:#202020 #ffffff",  # Kolor tła dialogu i tekstu
+    "button.focused": "bg:#ff0000 #ffffff",  # Styl aktywnego przycisku
+})
 
+
+cars = []
+
+# Funkcje obsługujące logikę
 def run_car_scrapper():
     global cars
-    cars=scrapper()
+    message_dialog(
+        title="Scraper został uruchomiony",
+        text="Zaraz bedziesz mógł sprawdzić najnowsze samochody").run()
+    cars = scrapper()
+    message_dialog(
+        title="Scrapper",
+        text=f"Znaleziono {len(cars)} samochodów."
+    ).run()
 
 def add_cars_to_database():
-    index = int(input("Podaj nr samochodu który chcesz zapisac w swojej bazie danych: "))
-    car_obj = cars[index-1]
-    new_car = Car(brand=car_obj["Marka"],model=car_obj["Model"],price=car_obj["price"],color=car_obj["Kolor"],engine_capacity=int(car_obj["Pojemność"].replace("cm3","")),power=int(car_obj["Moc"].replace("KM","")))
-    new_car.save()
-    print("Rekord dodany!")
+    if not cars:
+        message_dialog(
+            title="Błąd",
+            text="Najpierw musisz scrapować samochody!"
+        ).run()
+        return
+
+    options = "\n".join(
+        [f"{i+1}. {car['Marka']} {car['Model']} - {car['price']}" for i, car in enumerate(cars)]
+    )
+    index_input = input_dialog(
+        title="Dodaj samochód",
+        text=f"Podaj numer samochodu do zapisania:\n\n{options}"
+    ).run()
+
+    if not index_input or not index_input.isdigit():
+        message_dialog(
+            title="Błąd",
+            text="Nieprawidłowy numer."
+        ).run()
+        return
+
+    index = int(index_input)
+    if index < 1 or index > len(cars):
+        message_dialog(
+            title="Błąd",
+            text="Nieprawidłowy numer."
+        ).run()
+        return
+
+    car_obj = cars[index - 1]
+    new_car = create_car(car_obj)  # Użycie funkcji create_car
+    new_car.save()  # Zapisanie obiektu w bazie danych
+    message_dialog(
+        title="Sukces",
+        text="Rekord dodany!"
+    ).run()
 
 def show_cars_from_db():
-    my_cars=Car.objects.all()
-    print(my_cars)
+    my_cars = Car.objects.all()
+    if not my_cars:
+        message_dialog(
+            title="Samochody w bazie",
+            text="Brak samochodów w bazie danych."
+        ).run()
+        return
 
-def main():
-    while True:
-        wyswietl_menu()
-        wybor = input("Wybierz opcję: ")
+    cars_text = "\n".join(
+        [f"{car.id}. {car.brand} {car.model}, Cena: {car.price}, Kolor: {car.color}" for car in my_cars]
+    )
+    message_dialog(
+        title="Samochody w bazie",
+        text=cars_text
+    ).run()
 
-        if wybor == '1':
-            run_car_scrapper()
-        elif wybor == '2':
-            add_cars_to_database()
-        elif wybor == '3':
-            show_cars_from_db()
-        elif wybor == '4':
-            print("Do widzenia!")
-            break
-        else:
-            print("Niepoprawny wybór, spróbuj ponownie.")
+# Główna logika
+wybor = None
+while wybor != "4":
+    wybor = button_dialog(
+        title="MENU",
+        text="Wybierz opcję poniżej:\n(Użyj klawiszy strzałek):",
+        buttons=[
+            ("Scrapuj samochody", "1"),
+            ("Dodaj samochód do bazy", "2"),
+            ("Wyświetl samochody z bazy", "3"),
+            ("Wyjście", "4"),
+        ],
+        style=style
+    ).run()
 
-if __name__ == "__main__":
-    main()
+    if wybor == "1":
+        run_car_scrapper()
+    elif wybor == "2":
+        add_cars_to_database()
+    elif wybor == "3":
+        show_cars_from_db()
+
+message_dialog(
+    title="Koniec",
+    text="Do widzenia!"
+).run()

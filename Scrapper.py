@@ -13,7 +13,7 @@ def scrap_cars_links(url: str) :
     soup = BeautifulSoup(scrap_page(url), "html.parser")
     for div in soup.find_all('div', class_='offer-card__body'):
         a_tag = div.find('a', href=True)
-        cars_links.append(f"https://www.autotrader.pl{a_tag["href"]}")
+        cars_links.append(f"https://www.autotrader.pl{a_tag['href']}")
     return cars_links
 
 
@@ -40,7 +40,7 @@ def scrapper() :
     cars_list=[]
     i=1
     for link in links:
-        print(f"Samochód nr{i} {get_car_attributes(link)}")
+        #print(f"Samochód nr{i} {get_car_attributes(link)}")
         i+=1
         cars_list.append(get_car_attributes(link))
     return cars_list

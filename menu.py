@@ -9,7 +9,8 @@ from prompt_toolkit.shortcuts import radiolist_dialog
 
 from Scrapper import scrapper
 from car_methods import create_car
-from console_options import run_car_scrapper, add_cars_to_database, show_cars_from_db
+from console_options import CarManager
+from user_options import show_available_cars, check_credit_scoring
 
 # Ustawienie środowiska Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "KCK.settings")
@@ -25,14 +26,12 @@ style = Style.from_dict({
 })
 
 
-
-
 def login():
     wybor = radiolist_dialog(
         title="Logowanie",
         text="Wybierz sposób logowania:",
         values=[
-            ("user", "Zaloguj się"),
+            ("user", "Przeglądaj dostępne samochody"),
             ("business", "Zaloguj się jako klient biznesowy"),
         ],
         style=style
@@ -40,37 +39,59 @@ def login():
 
     if wybor == 'business':
         business_logic()
+    elif wybor == 'user':
+        user_logic()
 
     else:
-        pass
+        exit()
 
 
 def business_logic():
+    BusinessOpt = CarManager()
     wybor = None
     while wybor != "4":
-        wybor = button_dialog(
+        wybor = radiolist_dialog(
             title="MENU",
-            text="Wybierz opcję poniżej:\n(Użyj klawiszy strzałek):",
-            buttons=[
-                ("Scrapuj samochody", "1"),
-                ("Dodaj samochód do bazy", "2"),
-                ("Wyświetl samochody z bazy", "3"),
-                ("Wyjście", "4"),
+            text="Wybierz opcję poniżej:",
+            values=[
+                ("1", "Scrapuj samochody"),
+                ("2", "Dodaj samochód do bazy"),
+                ("3", "Wyświetl samochody z bazy"),
+                ("4", "Powrót"),
             ],
             style=style
         ).run()
 
         if wybor == "1":
-            run_car_scrapper()
+            BusinessOpt.run_car_scrapper()
         elif wybor == "2":
-            add_cars_to_database()
+            BusinessOpt.add_cars_to_database()
         elif wybor == "3":
-            show_cars_from_db()
+            BusinessOpt.show_cars_from_db()
 
-    message_dialog(
-        title="Koniec",
-        text="Do widzenia!"
-    ).run()
+        else:
+            login()
+
+
+def user_logic():
+
+    wybor = radiolist_dialog(
+        title="MENU",
+        text="Wybierz opcję poniżej:",
+        values=[
+                ("1", "Przeglądaj"),
+                ("2", "Sprawdź możliwość finansowania"),
+                ("3", "Powrót"),
+            ],
+            style=style
+        ).run()
+
+    if wybor == "1":
+        show_available_cars(previous_window=user_logic)
+    elif wybor == "2":
+        check_credit_scoring()
+    else:
+        login()
 
 
 # Uruchomienie aplikacji

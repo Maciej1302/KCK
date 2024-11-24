@@ -20,33 +20,59 @@ from app.models import Car
 
 style = Style.from_dict({
     "dialog": "bg:#202020 #ffffff",  # Kolor tła dialogu i tekstu
-    "button.focused": "bg:#ff0000 #ffffff",  # Styl aktywnego przycisku
+    "button.focused": "bg:#ff0000 #ffffff",
+    # Styl aktywnego przycisku
 })
 
 
-# Główna logika
-wybor = None
-while wybor != "4":
-    wybor = button_dialog(
-        title="MENU",
-        text="Wybierz opcję poniżej:\n(Użyj klawiszy strzałek):",
-        buttons=[
-            ("Scrapuj samochody", "1"),
-            ("Dodaj samochód do bazy", "2"),
-            ("Wyświetl samochody z bazy", "3"),
-            ("Wyjście", "4"),
+
+
+def login():
+    wybor = radiolist_dialog(
+        title="Logowanie",
+        text="Wybierz sposób logowania:",
+        values=[
+            ("user", "Zaloguj się"),
+            ("business", "Zaloguj się jako klient biznesowy"),
         ],
         style=style
     ).run()
 
-    if wybor == "1":
-        run_car_scrapper()
-    elif wybor == "2":
-        add_cars_to_database()
-    elif wybor == "3":
-        show_cars_from_db()
+    if wybor == 'business':
+        business_logic()
 
-message_dialog(
-    title="Koniec",
-    text="Do widzenia!"
-).run()
+    else:
+        pass
+
+
+def business_logic():
+    wybor = None
+    while wybor != "4":
+        wybor = button_dialog(
+            title="MENU",
+            text="Wybierz opcję poniżej:\n(Użyj klawiszy strzałek):",
+            buttons=[
+                ("Scrapuj samochody", "1"),
+                ("Dodaj samochód do bazy", "2"),
+                ("Wyświetl samochody z bazy", "3"),
+                ("Wyjście", "4"),
+            ],
+            style=style
+        ).run()
+
+        if wybor == "1":
+            run_car_scrapper()
+        elif wybor == "2":
+            add_cars_to_database()
+        elif wybor == "3":
+            show_cars_from_db()
+
+    message_dialog(
+        title="Koniec",
+        text="Do widzenia!"
+    ).run()
+
+
+# Uruchomienie aplikacji
+if __name__ == "__main__":
+    login()

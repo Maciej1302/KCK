@@ -2,6 +2,7 @@ from prompt_toolkit.shortcuts import radiolist_dialog, message_dialog, input_dia
 
 from app.models import Car
 from console_options import CarManager
+from credit_scoring import predict
 
 
 def show_available_cars(previous_window):
@@ -123,10 +124,10 @@ def get_property_status():
         title="Status nieruchomości",
         text="Wybierz swój status nieruchomości:",
         values=[
-            ("rent", "Wynajem"),
-            ("own", "Posiadam"),
-            ("mortgage", "Hipoteka"),
-            ("other", "Inny")
+            ("RENT", "Wynajem"),
+            ("OWN", "Posiadam"),
+            ("MORTGAGE", "Hipoteka"),
+            ("OTHER", "Inny")
         ]
     ).run()
 
@@ -148,8 +149,8 @@ def get_past_due_loans():
         title="Historia spłat pożyczek",
         text="Czy kiedykolwiek miałeś opóźnienia w spłacie pożyczki?",
         values=[
-            ("yes", "Tak"),
-            ("no", "Nie")
+            ("Y", "Tak"),
+            ("N", "Nie")
         ]
     ).run()
 
@@ -161,11 +162,11 @@ def show_summary(user_data, selected_car):
     while True:
         summary = (
             f"Samochód: {selected_car.brand} {selected_car.model}, Cena: {selected_car.price}\n"
-            f"Wiek: {user_data['age']}\n"
-            f"Roczny przychód: {user_data['annual_income']} PLN\n"
-            f"Status nieruchomości: {user_data['property_status']}\n"
-            f"Ilość lat pracy: {user_data['years_employed']}\n"
-            f"Historia spłat pożyczek: {'Tak' if user_data['past_due_loans'] == 'yes' else 'Nie'}\n"
+            f"Wiek: {user_data['person_age']}\n"
+            f"Roczny przychód: {user_data['person_income']} PLN\n"
+            f"Status nieruchomości: {user_data['person_home_ownership']}\n"
+            f"Ilość lat pracy: {user_data['person_emp_length']}\n"
+            f"Historia spłat pożyczek: {'Tak' if user_data['cb_person_default_on_file'] == 'yes' else 'Nie'}\n"
         )
         action = radiolist_dialog(
             title="Podsumowanie Twoich danych",
@@ -176,6 +177,7 @@ def show_summary(user_data, selected_car):
             ]
         ).run()
 
+        user_data['loan_amnt'] = selected_car.price
 
         if action == "edit":
             field_to_edit = radiolist_dialog(
@@ -194,39 +196,65 @@ def show_summary(user_data, selected_car):
                 age = get_user_age()
                 if age == "back":
                     continue
-                user_data["age"] = int(age)
+                user_data["person_age"] = int(age)
 
             elif field_to_edit == "annual_income":
                 income = get_annual_income()
                 if income == "back":
                     continue
-                user_data["annual_income"] = int(income)
+                user_data["person_income"] = int(income)
 
             elif field_to_edit == "property_status":
                 property_status = get_property_status()
                 if property_status == "back":
                     continue
-                user_data["property_status"] = property_status
+                user_data["person_home_ownership"] = property_status
 
             elif field_to_edit == "years_employed":
-                years_employed = get_years_employed(user_data["age"])
+                years_employed = get_years_employed(user_data["person_age"])
                 if years_employed == "back":
                     continue
-                user_data["years_employed"] = int(years_employed)
+                user_data["person_emp_length"] = int(years_employed)
 
             elif field_to_edit == "past_due_loans":
                 past_due_loans = get_past_due_loans()
                 if past_due_loans == "back":
                     continue
-                user_data["past_due_loans"] = past_due_loans
+                user_data["cb_person_default_on_file"] = past_due_loans
 
         elif action == "confirm":
             message_dialog(
                 title="Zatwierdzenie danych",
                 text="Poczekaj, trwa ocena Twojej zdolności kredytowej..."
             ).run()
-            ##pred =
+            pred = predict(user_data)
+            print(pred)
 
+            show_credit_decision(pred, selected_car)
+            break
+
+def show_credit_decision(pred, selected_car):
+    """
+    Wyświetla wynik oceny zdolności kredytowej na podstawie predykcji.
+    """
+
+    from menu import user_logic
+
+     # Drugi element to prawdopodobieństwo akceptacji
+    decision_text = (
+        "Gratulacje! Masz wysokie szanse na uzyskanie finansowania!" if pred == 1
+        else "Niestety, na podstawie wprowadzonych danych, Twoja zdolność kredytowa jest zbyt niska."
+    )
+
+    message_dialog(
+        title="Wynik oceny zdolności kredytowej",
+        text=(
+            f"Wynik analizy zdolności kredytowej dla samochodu {selected_car.brand} {selected_car.model}:\n\n"
+            f"{decision_text}"
+        )
+    ).run()
+
+    user_logic()
 
 def check_credit_scoring():
     """Główna logika sprawdzania zdolności kredytowej."""
@@ -241,27 +269,27 @@ def check_credit_scoring():
         age = get_user_age()
         if age == "back":
             continue
-        user_data["age"] = int(age)
+        user_data["person_age"] = int(age)
 
         income = get_annual_income()
         if income == "back":
             continue
-        user_data["annual_income"] = int(income)
+        user_data["person_income"] = int(income)
 
         property_status = get_property_status()
         if property_status == "back":
             continue
-        user_data["property_status"] = property_status
+        user_data["person_home_ownership"] = property_status
 
-        years_employed = get_years_employed(user_data["age"])
+        years_employed = get_years_employed(user_data["person_age"])
         if years_employed == "back":
             continue
-        user_data["years_employed"] = int(years_employed)
+        user_data["person_emp_length"] = int(years_employed)
 
         past_due_loans = get_past_due_loans()
         if past_due_loans == "back":
             continue
-        user_data["past_due_loans"] = past_due_loans
+        user_data["cb_person_default_on_file"] = past_due_loans
 
         # Wyświetlenie podsumowania i edycji
         show_summary(user_data, selected_car)

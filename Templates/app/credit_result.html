@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wynik finansowania</title>
+</head>
+<body>
+    <h1>Wynik finansowania</h1>
+    <h2>Samochód: {{ car.brand }} {{ car.model }}</h2>
+    <p>Cena: {{ car.price }} PLN</p>
+
+    {% if result == 1 %}
+        <p>Gratulacje! Masz wysokie szanse na uzyskanie finansowania tego samochodu.</p>
+    {% else %}
+        <p>Niestety, Twoja zdolność kredytowa nie spełnia wymagań na ten samochód.</p>
+    {% endif %}
+
+    <a href="{% url 'user_dashboard' %}">Powrót</a>
+</body>
+</html>

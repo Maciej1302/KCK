@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista samochodów</title>
+</head>
+<body>
+    <h1>Lista zapisanych samochodów</h1>
+
+    {% if cars %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Marka</th>
+                    <th>Model</th>
+                    <th>Cena</th>
+                    <th>Kolor</th>
+                    <th>Pojemność silnika</th>
+                    <th>Moc</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for car in cars %}
+                <tr>
+                    <td>{{ car.id }}</td>
+                    <td>{{ car.brand }}</td>
+                    <td>{{ car.model }}</td>
+                    <td>{{ car.price }}</td>
+                    <td>{{ car.color }}</td>
+                    <td>{{ car.engine_capacity }}</td>
+                    <td>{{ car.power }}</td>
+                </tr>
+                    <td>
+                    <a href="{% url 'check_credit_scoring' car.id %}">Sprawdź finansowanie</a>
+                </td>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Brak zapisanych samochodów w bazie danych.</p>
+    {% endif %}
+
+    <a href="{% url 'business_dashboard' %}">Powrót do menu</a>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprawdź możliwość finansowania</title>
+</head>
+<body>
+    <h1>Sprawdź możliwość finansowania</h1>
+    <h2>Samochód: {{ car.brand }} {{ car.model }}</h2>
+    <p>Cena: {{ car.price }} PLN</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <label>Wiek:
+            <input type="number" name="age" min="18" required>
+        </label><br>
+        <label>Roczny przychód:
+            <input type="number" name="income" min="0" required>
+        </label><br>
+        <label>Status nieruchomości:
+            <select name="property_status">
+                <option value="OWN">Posiadam</option>
+                <option value="RENT">Wynajem</option>
+                <option value="MORTGAGE">Hipoteka</option>
+            </select>
+        </label><br>
+        <label>Lata pracy:
+            <input type="number" name="years_employed" min="0" required>
+        </label><br>
+        <label>Historia spłat pożyczek:
+            <select name="past_due_loans">
+                <option value="N">Nigdy</option>
+                <option value="Y">Tak</option>
+            </select>
+        </label><br>
+        <button type="submit">Sprawdź</button>
+    </form>
+    <a href="{% url 'user_dashboard' %}">Powrót</a>
+</body>
+</html>

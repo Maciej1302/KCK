@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrapowanie i dodawanie samochodów</title>
+</head>
+<body>
+    <h1>Scrapowanie i dodawanie samochodów</h1>
+
+    <!-- Formularz do uruchomienia scrapera -->
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="scrap">Uruchom scrapera</button>
+    </form>
+
+    <!-- Wyświetlanie zescrapowanych samochodów -->
+    {% if scraped_cars %}
+        <h2>Znalezione samochody:</h2>
+        <form method="post">
+            {% csrf_token %}
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Wybierz</th>
+                        <th>Marka</th>
+                        <th>Model</th>
+                        <th>Cena</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for car in scraped_cars %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="car_ids" value="{{ forloop.counter0 }}">
+                        </td>
+                        <td>{{ car.Marka }}</td>
+                        <td>{{ car.Model }}</td>
+                        <td>{{ car.price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" name="add_to_db">Dodaj wybrane samochody do bazy danych</button>
+        </form>
+    {% elif messages %}
+        <p>Brak danych. Uruchom scrapera.</p>
+    {% endif %}
+
+    <a href="{% url 'business_dashboard' %}">Powrót do menu</a>
+</body>
+</html>

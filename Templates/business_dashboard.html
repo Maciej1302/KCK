@@ -1,16 +1,147 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+        /* Kluczem do animacji tła jest zmiana background-position w czasie */
+        @keyframes backgroundMove {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom right, #e0f0ff, #fdfdfd, #c7e8a1);
+            background-size: 200% 200%;
+            animation: backgroundMove 20s ease-in-out infinite;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header, main, footer {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #222;
+        }
+
+        /* main-content zajmuje dostępne miejsce, pozwala stopce "osiąść" na dole */
+        .main-content {
+            padding: 50px 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* wyśrodkowanie przycisków w poziomie */
+            justify-content: center; /* wyśrodkowanie w pionie w ramach dostępnego miejsca */
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        li {
+            font-size: 1rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #444;
+        }
+
+        .link-button {
+            display: inline-block;
+            background-color: #2d5e26; /* ciemna, elegancka zieleń */
+            padding: 10px 15px;
+            border: 1px solid #3a7030; 
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ffffff;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .link-button:hover {
+            background-color: #3a7030;
+            border-color: #4a8740;
+            color: #f9f9f9;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #444;
+        }
+
+        footer {
+            padding: 20px 0;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            text-align: center;
+            color: #555;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-    <h1>Business Dashboard</h1>
-    <ul>
-        <li><a href="{% url 'scrap_cars' %}">Scrapuj samochody</a></li>
-        <li><a href="{% url 'show_cars' %}">Zobacz swoje zapisane samochody</a></li>
-    </ul>
-<a href="{% url 'login_view' %}">Powrót do menu</a>
+    <header>
+        <h1>Business Dashboard</h1>
+    </header>
+
+    <main class="main-content">
+        <ul>
+            <li><a href="{% url 'scrap_cars' %}" class="link-button">Scrapuj samochody</a></li>
+            <li><a href="{% url 'business_saved_cars' %}" class="link-button">Zobacz swoje zapisane samochody</a></li>
+        </ul>
+        <a href="{% url 'login_view' %}" class="back-link">Powrót do menu</a>
+    </main>
+
+    <footer>
+        <p>© 2024 Company Name. All rights reserved.</p>
+    </footer>
 </body>
 </html>

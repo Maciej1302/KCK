@@ -4,44 +4,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista samochodów</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            height: 100%;
+        }
+
+        /* Animowany pastelowy gradient w tle */
+        @keyframes backgroundMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            background: linear-gradient(-45deg, #f9e7e7, #f9f2e7, #e7f9ed, #e7f0f9);
+            background-size: 400% 400%;
+            animation: backgroundMove 15s ease infinite;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 50px 0 20px;
+            font-size: 2rem;
+            color: #333;
+            opacity: 0;
+            animation: fadeInTitle 0.8s forwards ease;
+        }
+
+        @keyframes fadeInTitle {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .cards-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .car-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 270px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s;
+            opacity: 0;
+            animation: fadeInCard 0.6s forwards ease;
+        }
+
+        /* Opóźnienia dla kolejnych kart */
+        {% if cars %}
+        {% for car in cars %}
+        .cards-container .car-card:nth-child({{ forloop.counter }}) {
+            animation-delay: {{ forloop.counter|floatformat:"2" }}*0.1s;
+        }
+        {% endfor %}
+        {% endif %}
+
+        @keyframes fadeInCard {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .car-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .car-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .car-details {
+            margin-bottom: 20px;
+        }
+
+        .car-details p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+
+        .financing-link {
+            display: inline-block;
+            background: #f2f2f2;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .financing-link:hover {
+            background: #e7e7e7;
+        }
+
+        .no-cars {
+            text-align: center;
+            font-weight: 600;
+            background: rgba(255,255,255,0.7);
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 6px;
+            animation: fadeInNoCars 1s forwards ease;
+            opacity: 0;
+        }
+
+        @keyframes fadeInNoCars {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .footer-space {
+            flex: 1; /* aby stopka była na dole */
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 40px auto;
+            text-align: center;
+            background: #f9f2e7;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #f784c4;
+            background: #fff;
+        }
+    </style>
 </head>
 <body>
     <h1>Lista zapisanych samochodów</h1>
 
     {% if cars %}
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Marka</th>
-                    <th>Model</th>
-                    <th>Cena</th>
-                    <th>Kolor</th>
-                    <th>Pojemność silnika</th>
-                    <th>Moc</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for car in cars %}
-                <tr>
-                    <td>{{ car.id }}</td>
-                    <td>{{ car.brand }}</td>
-                    <td>{{ car.model }}</td>
-                    <td>{{ car.price }}</td>
-                    <td>{{ car.color }}</td>
-                    <td>{{ car.engine_capacity }}</td>
-                    <td>{{ car.power }}</td>
-                </tr>
-                    <td>
-                    <a href="{% url 'check_credit_scoring' car.id %}">Sprawdź finansowanie</a>
-                </td>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="cards-container">
+        {% for car in cars %}
+        <div class="car-card">
+            <div class="car-title">{{ car.brand }} {{ car.model }}</div>
+            <div class="car-details">
+                <p>Cena: {{ car.price }}</p>
+                <p>Kolor: {{ car.color }}</p>
+                <p>Pojemność silnika: {{ car.engine_capacity }}</p>
+                <p>Moc: {{ car.power }}</p>
+            </div>
+            <a href="{% url 'check_credit_scoring' car.id %}" class="financing-link">Sprawdź finansowanie</a>
+        </div>
+        {% endfor %}
+    </div>
     {% else %}
+    <div class="no-cars">
         <p>Brak zapisanych samochodów w bazie danych.</p>
+    </div>
     {% endif %}
 
-    <a href="{% url 'business_dashboard' %}">Powrót do menu</a>
+    <div class="footer-space"></div>
+    <div style="text-align: center;">
+        <a href="{% url 'business_dashboard' %}" class="back-link">Powrót do menu</a>
+    </div>
 </body>
 </html>

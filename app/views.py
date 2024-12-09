@@ -56,6 +56,10 @@ def show_cars_view(request):
     cars = Car.objects.all()  # Pobranie wszystkich samochodów z bazy danych
     return render(request, 'app/show_cars.html', {'cars': cars})
 
+def show_saved_cars(request):
+    cars = Car.objects.all()
+    return render(request, 'app/business_saved_cars.html', {'cars': cars})
+
 def check_credit_scoring_view(request, car_id):
     car = get_object_or_404(Car, id=car_id)  # Pobranie samochodu z bazy danych
     if request.method == 'POST':
@@ -66,7 +70,7 @@ def check_credit_scoring_view(request, car_id):
         years_employed = int(request.POST.get('years_employed', 0))
         past_due_loans = request.POST.get('past_due_loans', 'N')
 
-        # Logika finansowania (np. wysyłanie do modelu ML lub prosta analiza)
+        # Logika finansowania
         user_data = {
             "person_age": age,
             "person_income": income,
@@ -84,6 +88,7 @@ def check_credit_scoring_view(request, car_id):
             messages.success(request, f"Gratulacje! Możesz finansować samochód {car.brand} {car.model}.")
         else:
             messages.error(request, f"Niestety, nie spełniasz wymagań do finansowania tego samochodu.")
+        print(is_eligible)
         return render(request, 'app/credit_result.html', {'car': car, 'result': is_eligible})
 
     return render(request, 'app/check_credit_scoring.html', {'car': car})

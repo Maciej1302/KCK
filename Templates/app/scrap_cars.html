@@ -1,52 +1,210 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scrapowanie i dodawanie samochodów</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+        /* Animacja tła */
+        @keyframes backgroundMove {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom right, #e0f0ff, #fdfdfd, #c7e8a1);
+            background-size: 200% 200%;
+            animation: backgroundMove 20s ease-in-out infinite;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header, main, footer {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header, footer {
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 50px 0 30px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #222;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-bottom: 50px;
+        }
+
+        form {
+            margin-bottom: 30px;
+        }
+
+        /* Styl przycisków */
+        button[type="submit"], .link-button {
+            display: inline-block;
+            background-color: #2d5e26; /* ciemna, elegancka zieleń */
+            padding: 10px 15px;
+            border: 1px solid #3a7030; 
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        button[type="submit"]:hover, .link-button:hover {
+            background-color: #3a7030;
+            border-color: #4a8740;
+            color: #f9f9f9;
+        }
+
+        /* Styl tabeli */
+        table {
+            border-collapse: collapse;
+            margin: 20px auto;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        thead {
+            background: #f0f0f0;
+        }
+
+        thead th {
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+
+        p {
+            font-weight: 600;
+            margin-top: 30px;
+            color: #333;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #444;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #444;
+        }
+
+        footer {
+            border-top: 1px solid rgba(0,0,0,0.1);
+            color: #555;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <!-- Możesz dodać logo lub pozostawić puste -->
+    </header>
+
     <h1>Scrapowanie i dodawanie samochodów</h1>
 
-    <!-- Formularz do uruchomienia scrapera -->
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" name="scrap">Uruchom scrapera</button>
-    </form>
-
-    <!-- Wyświetlanie zescrapowanych samochodów -->
-    {% if scraped_cars %}
-        <h2>Znalezione samochody:</h2>
+    <main class="main-content">
+        <!-- Formularz do uruchomienia scrapera -->
         <form method="post">
             {% csrf_token %}
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Wybierz</th>
-                        <th>Marka</th>
-                        <th>Model</th>
-                        <th>Cena</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for car in scraped_cars %}
-                    <tr>
-                        <td>
-                            <input type="checkbox" name="car_ids" value="{{ forloop.counter0 }}">
-                        </td>
-                        <td>{{ car.Marka }}</td>
-                        <td>{{ car.Model }}</td>
-                        <td>{{ car.price }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button type="submit" name="add_to_db">Dodaj wybrane samochody do bazy danych</button>
+            <button type="submit" name="scrap">Uruchom scrapera</button>
         </form>
-    {% elif messages %}
-        <p>Brak danych. Uruchom scrapera.</p>
-    {% endif %}
 
-    <a href="{% url 'business_dashboard' %}">Powrót do menu</a>
+        <!-- Wyświetlanie zescrapowanych samochodów -->
+        {% if scraped_cars %}
+            <h2>Znalezione samochody:</h2>
+            <form method="post">
+                {% csrf_token %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Wybierz</th>
+                            <th>Marka</th>
+                            <th>Model</th>
+                            <th>Cena</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in scraped_cars %}
+                        <tr>
+                            <td><input type="checkbox" name="car_ids" value="{{ forloop.counter0 }}"></td>
+                            <td>{{ car.Marka }}</td>
+                            <td>{{ car.Model }}</td>
+                            <td>{{ car.price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" name="add_to_db">Dodaj wybrane samochody do bazy danych</button>
+            </form>
+        {% elif messages %}
+            <p>Brak danych. Uruchom scrapera.</p>
+        {% endif %}
+
+        <a href="{% url 'business_dashboard' %}" class="back-link">Powrót do menu</a>
+    </main>
+
+    <footer>
+        <p>© 2024 Company Name. All rights reserved.</p>
+    </footer>
 </body>
 </html>

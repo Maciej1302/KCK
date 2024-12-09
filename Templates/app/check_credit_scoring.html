@@ -4,38 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprawdź możliwość finansowania</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            height: 100%;
+        }
+
+        /* Animowany pastelowy gradient w tle */
+        @keyframes backgroundMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            background: linear-gradient(-45deg, #f9e7e7, #f9f2e7, #e7f9ed, #e7f0f9);
+            background-size: 400% 400%;
+            animation: backgroundMove 15s ease infinite;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            opacity: 0;
+            animation: fadeIn 0.8s forwards ease;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin: 0;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInTitle 0.8s forwards ease;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        @keyframes fadeInTitle {
+            to { opacity: 1; }
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        input[type="number"], select {
+            margin-top: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+            font-size: 0.95rem;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: #f784c4;
+            outline: none;
+        }
+
+        button[type="submit"] {
+            background: #f2f2f2;
+            color: #333;
+            font-weight: 600;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            transition: background 0.3s, transform 0.3s;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+
+        button[type="submit"]:hover {
+            background: #e7e7e7;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 30px auto 0;
+            text-align: center;
+            background: #f9f2e7;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: #333;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #f784c4;
+            background: #fff;
+        }
+
+        .footer-space {
+            flex: 1;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Sprawdź możliwość finansowania</h1>
-    <h2>Samochód: {{ car.brand }} {{ car.model }}</h2>
-    <p>Cena: {{ car.price }} PLN</p>
+    <div class="container">
+        <h1>Sprawdź możliwość finansowania</h1>
+        <h2>Samochód: {{ car.brand }} {{ car.model }}</h2>
+        <p>Cena: {{ car.price }} PLN</p>
 
-    <form method="post">
-        {% csrf_token %}
-        <label>Wiek:
-            <input type="number" name="age" min="18" required>
-        </label><br>
-        <label>Roczny przychód:
-            <input type="number" name="income" min="0" required>
-        </label><br>
-        <label>Status nieruchomości:
-            <select name="property_status">
-                <option value="OWN">Posiadam</option>
-                <option value="RENT">Wynajem</option>
-                <option value="MORTGAGE">Hipoteka</option>
-            </select>
-        </label><br>
-        <label>Lata pracy:
-            <input type="number" name="years_employed" min="0" required>
-        </label><br>
-        <label>Historia spłat pożyczek:
-            <select name="past_due_loans">
-                <option value="N">Nigdy</option>
-                <option value="Y">Tak</option>
-            </select>
-        </label><br>
-        <button type="submit">Sprawdź</button>
-    </form>
-    <a href="{% url 'user_dashboard' %}">Powrót</a>
+        <form method="post">
+            {% csrf_token %}
+            <label>Wiek:
+                <input type="number" name="age" min="18" required>
+            </label>
+            <label>Roczny przychód:
+                <input type="number" name="income" min="0" required>
+            </label>
+            <label>Status nieruchomości:
+                <select name="property_status">
+                    <option value="OWN">Posiadam</option>
+                    <option value="RENT">Wynajem</option>
+                    <option value="MORTGAGE">Hipoteka</option>
+                </select>
+            </label>
+            <label>Lata pracy:
+                <input type="number" name="years_employed" min="0" required>
+            </label>
+            <label>Historia spłat pożyczek:
+                <select name="past_due_loans">
+                    <option value="N">Nigdy</option>
+                    <option value="Y">Tak</option>
+                </select>
+            </label>
+            <button type="submit">Sprawdź</button>
+        </form>
+        <div style="text-align: center;">
+            <a href="{% url 'user_dashboard' %}" class="back-link">Powrót</a>
+        </div>
+    </div>
 </body>
 </html>

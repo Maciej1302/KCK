@@ -1,15 +1,119 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
+    <style>
+        /* Rozciągnięcie na pełną wysokość i użycie flexbox */
+        html, body {
+            margin: 0;
+            height: 100%;
+            font-family: 'Open Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animowany gradient w tle */
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            color: #333;
+            background: linear-gradient(-45deg, #f4f1bb, #f2cc8f, #f7a07b, #f784c4);
+            background-size: 400% 400%;
+            animation: gradientBackground 15s ease infinite;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Nagłówek bez tekstu i białego tła */
+        .header {
+            /* brak tła, brak tekstu */
+            padding: 20px 0;
+        }
+
+        /* Główna zawartość, zajmuje resztę miejsca */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list__item {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Lekko zmieniony kolor CTA, bez białej ramki */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .nav-list__link {
+            display: inline-block;
+            background-color: #f7a07b; 
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-list__link:hover {
+            background-color: #f784c4;
+            animation: pulse 0.6s infinite;
+        }
+
+        /* Stopka na dole ekranu */
+        .footer {
+            background-color: rgba(255,255,255,0.8);
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+            padding: 20px 0;
+        }
+
+        .footer__text {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>User Dashboard</h1>
-    <ul>
-        <li><a href="{% url 'show_cars' %}">Zobacz dostepne samochody</a></li>
-
-    </ul>
+    <header class="header">
+        <div class="container">
+            <!-- Usunięto tytuł -->
+        </div>
+    </header>
+    <main class="main-content">
+        <ul class="nav-list">
+            <li class="nav-list__item">
+                <a href="{% url 'show_cars' %}" class="nav-list__link">Zobacz dostepne samochody</a>
+            </li>
+        </ul>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <p class="footer__text">© 2024 MotoFlow. All rights reserved</p>
+        </div>
+    </footer>
 </body>
 </html>

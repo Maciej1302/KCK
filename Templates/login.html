@@ -67,12 +67,11 @@
 </head>
 <body>
     <div class="login-container">
-        <h1>Logowanie</h1>
         <div class="login-buttons">
             <form method="post">
                 {% csrf_token %}
-                <button class="login-button" name="user_type" value="user" type="submit">Zaloguj się jako klient</button>
-                <button class="login-button" name="user_type" value="business" type="submit">Zaloguj się jako klient biznesowy</button>
+                <button class="login-button" name="user_type" value="user" type="submit">Jestem klientem</button>
+                <button class="login-button" name="user_type" value="business" type="submit">Jestem klientem biznesowym</button>
             </form>
         </div>
     </div>
